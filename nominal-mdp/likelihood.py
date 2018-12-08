@@ -28,7 +28,7 @@ def Sigma(beta, f, V, mu, nS):
     return mu - (1 + beta) * lambda_mu + lambda_mu * const1
 
 
-def SigmaLikelihood(P, V, nS, nA, sigma, tol, outer_iter_count):
+def SigmaLikelihood(P, V, nS, nA, sigma, tol):
     """
     Parameters:
     ----------

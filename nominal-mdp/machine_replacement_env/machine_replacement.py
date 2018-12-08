@@ -5,14 +5,6 @@ import random
 from machine_replacement_env import MachineReplacementEnv, MachineReplacementDirichletEnv
 
 discount_factor = 0.8
-# uncertanity in transitions
-env = MachineReplacementDirichletEnv()
-print env.P
-
-# uncertainty in rewards
-#env = MachineReplacementEnv()
-#print env.P
-
 '''
 # uncertainty in rewards
 env = MachineReplacementEnv(state_num=50)
@@ -24,7 +16,7 @@ while terminal_status == 0:
     cost, terminal_status = env.step(actions[i])
     print i, cost
     i += 1
-
+'''
 
 # uncertanity in transitions
 env = MachineReplacementDirichletEnv(rng_seed=2)
@@ -39,4 +31,3 @@ while i < terminal_steps:
     cost, state = env.step(actions[i])
     print actions[i], cost, state
     i += 1
-'''

@@ -79,14 +79,12 @@ def value_iteration(P, nS, nA, gamma=0.9, max_iteration=20, tol=1e-3):
         V = newV
         if Vdiff < tol:
             break
-
     # Calculate the policy.
     for state in range(nS):
         BV = np.zeros(nA)
         for action in range(nA):
             BV[action] = BellmanOp(P, V, state, action, gamma)
         policy[state] = np.argmin(BV)
-
     return V, policy
 
 

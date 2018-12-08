@@ -28,15 +28,3 @@ register(
     entry_point=
     'test_env.envs.robust_air_routing_testcase:AirCraftRoutingSimple',
 )
-
-register(
-    id='MachineReplacement-v1',
-    entry_point=
-    'test_env.envs.machine_replace_reward:MachineReplacementRewardEnv',
-)
-
-register(
-    id='MachineReplacement-v2',
-    entry_point=
-    'test_env.envs.machine_replace_transition:MachineReplacementDirichletEnv',
-)

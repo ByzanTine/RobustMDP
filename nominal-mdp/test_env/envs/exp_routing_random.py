@@ -25,47 +25,6 @@ DOWN = 1
 RIGHT = 2
 UP = 3
 
-# Storm maps
-GRID_SIZE = 5
-K = 1
-assert 2 * K + 1 <= GRID_SIZE
-RUN_ID = 0  # Generate and store on a differently generated randomness under the same setting
-MAP_FILE = 'random_store/GS_%d_K_%d_RUN_%d.npy' % (GRID_SIZE, K, RUN_ID)
-AREA_UP_BOUND = math.ceil(GRID_SIZE * GRID_SIZE / float(K))
-
-# Q Single
-Q_SINGLE_G2G = .9
-Q_SINGLE_G2B = 1. - Q_SINGLE_G2G
-Q_SINGLE_B2B = .1
-Q_SINGLE_B2G = 1. - Q_SINGLE_B2B
-# P Perturbation
-E = 0.75  # always added to 2B and decreased to 2G
-P_SINGLE_G2G = Q_SINGLE_G2G - E
-P_SINGLE_G2B = 1. - P_SINGLE_G2G
-P_SINGLE_B2B = Q_SINGLE_B2B + E
-P_SINGLE_B2G = 1. - P_SINGLE_B2B
-
-# Cost
-COST_NORMAL = 1.
-COST_STORM = 10.
-
-if os.path.isfile(MAP_FILE):
-    each_storm_map_bbox = np.load(MAP_FILE)
-else:
-    each_storm_map_bbox = np.zeros((K, 4), dtype=int)  # storm areas can overlap
-    for j in range(K):
-        area = np.inf
-        while area > AREA_UP_BOUND or area <= 0:
-            bbox_left = np.random.randint(0, GRID_SIZE - 1)
-            bbox_right = np.random.randint(0, GRID_SIZE - 1)
-            bbox_left, bbox_right = min(bbox_left, bbox_right), max(bbox_left, bbox_right)
-            bbox_top = np.random.randint(0, GRID_SIZE - 1)
-            bbox_bottom = np.random.randint(0, GRID_SIZE - 1)
-            bbox_top, bbox_bottom = min(bbox_top, bbox_bottom), max(bbox_top, bbox_right)
-            area = (bbox_bottom - bbox_top) * (bbox_right - bbox_left)
-        each_storm_map_bbox[j] = np.array([bbox_left, bbox_right, bbox_top, bbox_bottom])
-    np.save(MAP_FILE, each_storm_map_bbox)
-
 class ExpRoutingRandom(discrete.DiscreteEnv):
     """
     The aircraft must go through a stormy area.
@@ -96,6 +55,49 @@ class ExpRoutingRandom(discrete.DiscreteEnv):
     }
 
     def __init__(self, desc=None):
+        pass
+
+    def set(self, config):
+        GRID_SIZE = config.grid_size
+        K = config.k
+        assert 2 * K + 1 <= GRID_SIZE
+        RUN_ID = config.run_id  # Generate and store on a differently generated randomness under the same setting
+        MAP_FILE = 'random_store/GS_%d_K_%d_RUN_%d.npy' % (GRID_SIZE, K, RUN_ID)
+        AREA_UP_BOUND = math.ceil(GRID_SIZE * GRID_SIZE / float(K))
+
+        # Q Single
+        Q_SINGLE_G2G = config.g2g
+        Q_SINGLE_G2B = 1. - Q_SINGLE_G2G
+        Q_SINGLE_B2B = config.b2b
+        Q_SINGLE_B2G = 1. - Q_SINGLE_B2B
+        # P Perturbation
+        E = config.epsilon  # always added to 2B and decreased to 2G
+        P_SINGLE_G2G = Q_SINGLE_G2G - E
+        P_SINGLE_G2B = 1. - P_SINGLE_G2G
+        P_SINGLE_B2B = Q_SINGLE_B2B + E
+        P_SINGLE_B2G = 1. - P_SINGLE_B2B
+
+        # Cost
+        COST_NORMAL = 1.
+        COST_STORM = config.cost_storm
+
+        if os.path.isfile(MAP_FILE):
+            each_storm_map_bbox = np.load(MAP_FILE)
+        else:
+            each_storm_map_bbox = np.zeros((K, 4), dtype=int)  # storm areas can overlap
+            for j in range(K):
+                area = np.inf
+                while area > AREA_UP_BOUND or area <= 0:
+                    bbox_left = np.random.randint(0, GRID_SIZE - 1)
+                    bbox_right = np.random.randint(0, GRID_SIZE - 1)
+                    bbox_left, bbox_right = min(bbox_left, bbox_right), max(bbox_left, bbox_right)
+                    bbox_top = np.random.randint(0, GRID_SIZE - 1)
+                    bbox_bottom = np.random.randint(0, GRID_SIZE - 1)
+                    bbox_top, bbox_bottom = min(bbox_top, bbox_bottom), max(bbox_top, bbox_right)
+                    area = (bbox_bottom - bbox_top) * (bbox_right - bbox_left)
+                each_storm_map_bbox[j] = np.array([bbox_left, bbox_right, bbox_top, bbox_bottom])
+            np.save(MAP_FILE, each_storm_map_bbox)
+
         self.nrow, self.ncol = nrow, ncol = (GRID_SIZE, GRID_SIZE)
 
         k = K
